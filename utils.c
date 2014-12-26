@@ -30,3 +30,20 @@ char* get_time(){
 #endif
     return p;
 }
+
+
+
+
+
+int getIntegerComplement(int x){
+	/*Return the integer compliment using bit wise operation*/
+	bool flag = false;
+	for (int i = 31; i >= 0; --i){
+		int xx = 1 << i;
+		if (flag || x&xx)
+			flag = true;
+		if (flag)
+			x ^= xx;
+	}
+	return x;
+}
