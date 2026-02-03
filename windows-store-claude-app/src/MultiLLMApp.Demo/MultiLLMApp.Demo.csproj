@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>12.0</LangVersion>
+    <RootNamespace>MultiLLMApp.Demo</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MultiLLMApp.Core\MultiLLMApp.Core.csproj" />
+    <ProjectReference Include="..\MultiLLMApp.Data\MultiLLMApp.Data.csproj" />
+  </ItemGroup>
+
+</Project>
