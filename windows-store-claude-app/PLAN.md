@@ -1,222 +1,97 @@
-# Windows Store Claude Command App - Development Plan
+# Multi-LLM Windows Store App - Master Plan
 
 ## Overview
-A lightweight Windows Store app for executing commands via Claude API and displaying responses with minimal resource and token consumption.
+A lightweight Windows Store application for interacting with multiple LLM providers (Claude, ChatGPT, etc.) through independent tabbed sessions with isolated contexts.
 
 ---
 
-## Architecture
+## Documentation Index
+
+| Document | Description |
+|----------|-------------|
+| [01-PRD.md](docs/01-PRD.md) | Product Requirements & Customer Experience |
+| [02-LOW-LEVEL-SPEC.md](docs/02-LOW-LEVEL-SPEC.md) | Detailed Requirements & Acceptance Tests |
+| [03-TECHNICAL-SPEC.md](docs/03-TECHNICAL-SPEC.md) | Architecture, Data Flow & Class Diagrams |
+| [04-TEST-PLAN.md](docs/04-TEST-PLAN.md) | Unit, Functional & E2E Test Plans |
+
+---
+
+## Key Design Principles
+
+1. **Provider Agnostic**: Loosely coupled via `ILLMProvider` interface
+2. **Context Isolation**: Each tab owns its session, no shared state
+3. **Lightweight**: < 50MB memory, < 1s startup
+4. **Token Efficient**: Haiku default, single-turn mode, cancel streaming
+
+---
+
+## Architecture Summary
 
 ```
-┌─────────────────────────────────────────┐
-│         Windows Store App (UWP)         │
-├─────────────────────────────────────────┤
-│  UI Layer (XAML - Minimal)              │
-│  ├── Command Input Box                  │
-│  ├── Response Display Panel             │
-│  └── Settings Flyout                    │
-├─────────────────────────────────────────┤
-│  Core Logic (C#)                        │
-│  ├── API Client (HttpClient)            │
-│  ├── Token Manager                      │
-│  ├── Response Parser                    │
-│  └── Local Cache                        │
-├─────────────────────────────────────────┤
-│  Data Layer                             │
-│  ├── Secure API Key Storage             │
-│  └── Command History (SQLite)           │
-└─────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────┐
+│                    Multi-Tab UI (WinUI 3)                   │
+├─────────────────────────────────────────────────────────────┤
+│  Tab1 [Claude]    Tab2 [OpenAI]    Tab3 [Claude]    [+]    │
+├─────────────────────────────────────────────────────────────┤
+│                       TabManager                            │
+│         (Orchestrates isolated TabContext instances)        │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐         │
+│  │ TabContext  │  │ TabContext  │  │ TabContext  │         │
+│  │ ─Session    │  │ ─Session    │  │ ─Session    │         │
+│  │ ─Provider   │  │ ─Provider   │  │ ─Provider   │         │
+│  └─────────────┘  └─────────────┘  └─────────────┘         │
+├─────────────────────────────────────────────────────────────┤
+│                    ProviderFactory                          │
+│  ┌──────────┐  ┌──────────┐  ┌──────────┐                  │
+│  │  Claude  │  │  OpenAI  │  │  Custom  │                  │
+│  │ Provider │  │ Provider │  │ Provider │                  │
+│  └──────────┘  └──────────┘  └──────────┘                  │
+├─────────────────────────────────────────────────────────────┤
+│  SecureVault (Credentials)  │  SQLite (State Persistence)  │
+└─────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
 ## Tech Stack
 
-| Component | Technology | Rationale |
-|-----------|------------|-----------|
-| Framework | WinUI 3 / UWP | Native Windows, lightweight |
-| Language | C# | Fast, low memory |
-| HTTP | HttpClient | Built-in, efficient |
-| Storage | Windows.Storage APIs | Secure credential vault |
-| Cache | SQLite | Lightweight local DB |
+| Component | Technology |
+|-----------|------------|
+| Framework | WinUI 3 |
+| Language | C# / .NET 8 |
+| Storage | SQLite + Windows Credential Vault |
+| HTTP | HttpClient with SSE streaming |
 
 ---
 
-## Token Optimization Strategies
+## MVP Features
 
-### 1. Request Optimization
-- **System prompt caching**: Store reusable system prompts locally
-- **Concise prompts**: Strip unnecessary whitespace/formatting
-- **Max tokens limit**: Set explicit `max_tokens` per request
-- **Streaming responses**: Use SSE for real-time display, cancel early if needed
-
-### 2. Context Management
-- **No conversation history by default**: Single-turn mode
-- **Optional context toggle**: User enables multi-turn when needed
-- **Context summarization**: Compress long conversations before sending
-
-### 3. Model Selection
-- **Default to Claude Haiku**: Fastest, cheapest for simple tasks
-- **User override**: Allow Sonnet/Opus selection for complex tasks
-
----
-
-## Features (MVP)
-
-### Core
-- [ ] Single command input with execute button
-- [ ] Response display with markdown rendering
-- [ ] Copy response to clipboard
-- [ ] API key configuration (secure storage)
-
-### Token-Saving Features
-- [ ] Token counter display (estimate before send)
-- [ ] Model selector (Haiku/Sonnet/Opus)
-- [ ] Max response length slider
-- [ ] Cancel streaming response
-
-### Quality of Life
-- [ ] Command history (last 20, local only)
-- [ ] Dark/Light theme
-- [ ] Keyboard shortcuts (Ctrl+Enter to send)
-
----
-
-## Project Structure
-
-```
-ClaudeCommandApp/
-├── App.xaml
-├── App.xaml.cs
-├── MainWindow.xaml
-├── MainWindow.xaml.cs
-├── Services/
-│   ├── ClaudeApiService.cs      # API communication
-│   ├── TokenEstimator.cs        # Estimate tokens before send
-│   └── SecureStorage.cs         # API key management
-├── Models/
-│   ├── CommandRequest.cs
-│   └── CommandResponse.cs
-├── Helpers/
-│   └── MarkdownRenderer.cs
-├── Assets/
-│   └── Icons/
-└── Package.appxmanifest
-```
-
----
-
-## API Integration
-
-### Endpoint
-```
-POST https://api.anthropic.com/v1/messages
-```
-
-### Minimal Request Payload
-```json
-{
-  "model": "claude-3-haiku-20240307",
-  "max_tokens": 1024,
-  "messages": [
-    {"role": "user", "content": "user command here"}
-  ]
-}
-```
-
-### Headers
-```
-x-api-key: {stored_key}
-anthropic-version: 2023-06-01
-content-type: application/json
-```
+- Multi-tab interface with isolated contexts
+- Claude and OpenAI provider support
+- Per-tab provider/model selection
+- Streaming responses with cancel
+- Token estimation and limits
+- Secure API key storage
+- Session persistence across restarts
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Foundation (Week 1)
-- [ ] Create UWP/WinUI 3 project
-- [ ] Implement basic UI (input + output)
-- [ ] Add secure API key storage
-- [ ] Basic API call (non-streaming)
-
-### Phase 2: Core Features (Week 2)
-- [ ] Streaming response support
-- [ ] Model selector
-- [ ] Token estimation display
-- [ ] Max tokens configuration
-
-### Phase 3: Polish (Week 3)
-- [ ] Command history
-- [ ] Markdown rendering
-- [ ] Error handling & retry
-- [ ] Theme support
-
-### Phase 4: Store Prep (Week 4)
-- [ ] Store assets (icons, screenshots)
-- [ ] Privacy policy
-- [ ] Store listing description
-- [ ] Testing & certification
+| Phase | Focus | Duration |
+|-------|-------|----------|
+| 1 | Core tab infrastructure, provider abstraction | Week 1-2 |
+| 2 | Claude + OpenAI providers, streaming | Week 2-3 |
+| 3 | UI polish, persistence, error handling | Week 3-4 |
+| 4 | Testing, store submission | Week 4-5 |
 
 ---
 
-## Performance Targets
+## Success Criteria
 
-| Metric | Target |
-|--------|--------|
-| App startup | < 1 second |
-| Memory usage | < 50 MB idle |
-| API response start | < 500ms (streaming) |
-| Package size | < 10 MB |
-
----
-
-## Security Considerations
-
-1. **API Key Storage**: Use `Windows.Security.Credentials.PasswordVault`
-2. **No telemetry**: Zero data collection
-3. **Local only**: No server-side storage of commands/responses
-4. **HTTPS only**: All API calls over TLS
-
----
-
-## Store Requirements Checklist
-
-- [ ] Privacy policy URL
-- [ ] Age rating questionnaire
-- [ ] App icons (all sizes)
-- [ ] Screenshots (min 2)
-- [ ] Description (short + long)
-- [ ] Category: Productivity > Developer Tools
-
----
-
-## Dependencies
-
-```xml
-<PackageReference Include="CommunityToolkit.WinUI.UI.Controls" Version="7.x" />
-<PackageReference Include="Microsoft.Data.Sqlite" Version="8.x" />
-```
-
----
-
-## Cost Estimation (Per User)
-
-| Usage | Model | Est. Monthly Cost |
-|-------|-------|-------------------|
-| Light (50 cmds/day) | Haiku | ~$0.50 |
-| Medium (200 cmds/day) | Haiku | ~$2.00 |
-| Heavy (200 cmds/day) | Sonnet | ~$15.00 |
-
-*Based on avg 500 input + 1000 output tokens per command*
-
----
-
-## Future Enhancements (Post-MVP)
-
-- Command templates/snippets
-- Export conversation to file
-- Custom system prompts
-- Keyboard-only mode
-- Multi-window support
+- All E2E acceptance tests pass
+- No S1/S2 defects at release
+- App startup < 1 second
+- Memory < 100MB with 10 tabs
+- Store certification approved
