@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>US Investment Area Discovery — Quick Guide</title>
+<style>
+:root{color-scheme:light;--ink:#172033;--muted:#5d687b;--line:#e4e9f0;--soft:#f5f7fa;--accent:#2359a8;--green:#176b45}
+*{box-sizing:border-box}body{margin:0;background:#f3f5f8;color:var(--ink);font:15px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:900px;margin:32px auto;padding:34px 40px;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 8px 30px #15233b0b}
+h1{font-size:29px;line-height:1.2;margin:0 0 8px;letter-spacing:-.5px}h2{font-size:18px;margin:26px 0 10px}p{margin:8px 0}.sub{color:var(--muted);margin-bottom:22px}.note{background:#eef4fc;border-left:4px solid var(--accent);padding:12px 15px;border-radius:7px;margin:14px 0}
+table{border-collapse:collapse;width:100%;margin:10px 0 16px;font-size:14px}th,td{text-align:left;padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top}th{background:var(--soft);font-weight:650}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.tab{border:1px solid var(--line);border-radius:9px;padding:12px}.tab b{display:block;margin-bottom:3px}.muted{color:var(--muted)}
+ul{padding-left:21px;margin:8px 0}li{margin:5px 0}.pill{display:inline-block;padding:3px 9px;border-radius:20px;background:#edf5ef;color:var(--green);font-size:12px;font-weight:650}
+footer{border-top:1px solid var(--line);margin-top:25px;padding-top:14px;color:var(--muted);font-size:12px}
+@media(max-width:640px){main{margin:0;padding:24px 18px;border-radius:0}.tabs{grid-template-columns:1fr}h1{font-size:25px}}
+@media print{body{background:#fff}main{margin:0;box-shadow:none;border:0;max-width:none;padding:10px 18px}}
+</style>
+</head>
+<body>
+<main>
+  <span class="pill">2–3 minute guide</span>
+  <h1>US Investment Area Discovery</h1>
+  <p class="sub">Quick guide to first-run setup, workbook inputs, and interpreting ZIP-code rankings.</p>
+
+  <h2>What this tool does</h2>
+  <p>It discovers promising US markets, groups nearby ZIP codes into geographic clusters, and scores each ZIP for rental prospects, schools, safety, employment, affordability, and long-term resilience.</p>
+  <div class="note"><b>Scope:</b> It answers “where should I look?” It does not find or underwrite individual houses. Property discovery remains a separate workflow.</div>
+
+  <h2>First run: guided setup</h2>
+  <p>The skill starts with a short conversational wizard. Existing preferences are pre-filled; you confirm or change them rather than entering everything again.</p>
+  <table>
+    <thead><tr><th>Input</th><th>Starting setting</th></tr></thead>
+    <tbody>
+      <tr><td>Purchase-price target</td><td>About $350,000 or less</td></tr>
+      <tr><td>Down payment</td><td>Less than $100,000; closing costs and reserves are separate</td></tr>
+      <tr><td>Target rent</td><td>About $2,500/month where supported by local evidence</td></tr>
+      <tr><td>Property type / size</td><td>Single-family, townhome, rental-permitted condo, duplex or small multifamily; 2–4 bedrooms</td></tr>
+      <tr><td>Holding period</td><td>10–15 years</td></tr>
+      <tr><td>Geography</td><td>Nationwide; DFW, Seattle, Florida, NJ, Boston and Atlanta are starting points, not limits</td></tr>
+      <tr><td>School requirement</td><td>Elementary, middle and high school each at least 8/10</td></tr>
+      <tr><td>Report</td><td>One Excel workbook with four tabs; ZIP scorecard in wide format</td></tr>
+    </tbody>
+  </table>
+  <p>The wizard confirms mandatory gates, scoring weights, and report layout before the first full research run.</p>
+
+  <h2>Excel workbook: four tabs</h2>
+  <div class="tabs">
+    <div class="tab"><b>1. Executive Summary</b><span class="muted">Top metros/clusters and ZIPs, scores, strength, qualification, confidence, and ranking rationale.</span></div>
+    <div class="tab"><b>2. Metro &amp; ZIP Details</b><span class="muted">Geographic clusters with nearby ZIPs grouped together. Each ZIP keeps its own score.</span></div>
+    <div class="tab"><b>3. ZIP Parameter Scorecard</b><span class="muted">One row per ZIP; separate columns for parameter scores, evidence, confidence, gates, and risks.</span></div>
+    <div class="tab"><b>4. Methodology &amp; Assumptions</b><span class="muted">Weights, gate definitions, thresholds, assumptions, sources, and report date.</span></div>
+  </div>
+
+  <h2>How to interpret the results</h2>
+  <p><b>Score (0–100)</b> is the weighted ZIP-code score. Higher is stronger.</p>
+  <table>
+    <thead><tr><th>Score</th><th>Strength</th></tr></thead>
+    <tbody>
+      <tr><td>90–100</td><td>Exceptional</td></tr>
+      <tr><td>80–89</td><td>Very Strong</td></tr>
+      <tr><td>70–79</td><td>Good</td></tr>
+      <tr><td>60–69</td><td>Moderate</td></tr>
+      <tr><td>Below 60</td><td>Weak</td></tr>
+    </tbody>
+  </table>
+  <p><b>Qualification is separate from score:</b></p>
+  <ul>
+    <li><b>Qualified:</b> evidence supports all mandatory gates.</li>
+    <li><b>Conditional:</b> promising, but one or more items need verification.</li>
+    <li><b>Failed:</b> a mandatory gate is not met.</li>
+    <li><b>Insufficient Evidence:</b> reliable information is not adequate to decide.</li>
+  </ul>
+  <p>A ZIP scoring 88 can still fail if a mandatory school or safety gate is not met. <b>Confidence</b> indicates evidence quality: High (strong official or ZIP-/address-specific evidence), Medium (credible evidence with limitations), or Low (proxy, asking-rent, stale, or incomplete data).</p>
+  <div class="note"><b>School check:</b> Elementary, middle, and high school ratings are checked individually—never averaged. School assignments, HOA rental rules, insurance, and property hazards often need a specific property address to confirm.</div>
+
+  <h2>What to do next</h2>
+  <p>Use the Executive Summary to choose clusters, compare ZIPs in the scorecard, then pass selected ZIP codes to the separate property-search workflow for listing-level rent comps, financing, cash flow, and due diligence.</p>
+
+  <footer>Market screening is not financial, legal, tax, insurance, or school-placement advice. Verify current facts and address-specific conditions before making an investment decision.</footer>
+</main>
+</body>
+</html>
