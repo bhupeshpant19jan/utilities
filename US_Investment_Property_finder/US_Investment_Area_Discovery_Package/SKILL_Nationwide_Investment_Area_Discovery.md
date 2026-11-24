@@ -1,19 +1,29 @@
 ---
 name: nationwide-investment-area-discovery
-description: Guided first-time setup and recurring research of US metropolitan areas, geographic clusters, and ZIP codes for residential rental-investment suitability. Produces a four-tab Excel workbook with a wide-format ZIP parameter scorecard. Area discovery only; not individual property listing searches.
+description: Score one or more user-specified cities or discover US markets using separate Rental Market Attractiveness and Investment Feasibility scores, plus ZIP-level discovery. Produces evidence-backed city rankings and a four-tab Excel workbook. Area discovery only; not individual property listing searches.
 ---
 
 # Nationwide Investment Area Discovery Skill
 
 ## Purpose and boundary
 
-Answer **where should the investor look?** Discover promising US markets, group nearby ZIP codes into geographic clusters, score each ZIP, validate mandatory gates, and deliver a concise Excel workbook.
+Answer **where should the investor look?** Support three modes: (1) score a city or user-supplied city list, (2) discover promising US markets nationwide, and (3) group nearby ZIP codes into geographic clusters and score each ZIP. City scoring must calculate Rental Market Attractiveness (RMA) and Investment Feasibility (IF) separately, then provide a clearly labeled combined search-priority score. ZIP-level scoring and mandatory gates remain separate.
 
 This skill does **not** search for or underwrite individual property listings. A separate property-discovery workflow evaluates actual properties in selected areas. Keep the two projects independent.
 
 ## Source of truth
 
 Follow `US_Investment_Area_Discovery_Master_Prompt.md` for the complete investor constraints, mandatory gates, weights, evidence standards, workbook schema, and quality checks. The master prompt controls if any instruction conflicts with this skill. Do not change finalized criteria without explicit user direction.
+
+## Operating modes — select from the user's request
+
+Choose the narrowest mode that fulfills the request; do not force the nationwide wizard for a simple city-score request.
+
+1. **City Score Mode:** If the user supplies one city or a list of cities, score exactly those cities. Accept inputs such as `Plano, TX`, `Frisco, TX`, or a comma/newline-separated list. If a city name is ambiguous, ask one concise clarification for state/metro. Do not silently add nearby cities. If the user supplies a state/metro, preserve that scope.
+2. **Nationwide Discovery Mode:** If the user asks to discover/find/rank the best US markets or ZIP codes, run the nationwide workflow and wizard/profile rules.
+3. **Refresh/Compare Mode:** If the user asks to update, compare, or rerank previously scored cities/ZIPs, reuse the prior scope and confirmed profile; update only the requested dimension.
+
+City Score Mode must work with a single city or multiple cities. Reuse the confirmed investor profile where available. If essential assumptions are missing, ask only for the missing item(s); otherwise use the confirmed profile and proceed. For this user's current DFW investment profile, use: purchase price cap $350,000; 20% and 25% down-payment scenarios; total initial cash ceiling $150,000; maximum reserve-adjusted owner contribution $300/month; 10-year horizon; balanced rental income/appreciation; legally rentable residential property. Treat these as user-specific defaults only when the active profile confirms them; for other users, use their saved profile or ask.
 
 ## First-run guided setup wizard
 
@@ -60,27 +70,23 @@ Show and confirm the finalized gates:
 Explain that school boundaries, rental permissions, insurance, and hazards often require address-level verification later. ZIP-level qualification can be provisional when those details cannot be established at ZIP level.
 
 **Step 4 — Scoring model**
-Present the fixed weights and confirm they remain unchanged:
-- Rental demand and tenant availability — 15
-- Employment diversity and job accessibility — 15
-- Tenant income and financial resilience — 10
-- Rental yield and break-even potential — 20
-- Crime and neighborhood safety — 10
-- School quality and stability — 10
-- Property tax, insurance, and HOA burden — 10
-- Population growth and infrastructure — 5
-- Resale liquidity and economic diversity — 5
+Explain the three distinct score systems; never blend or present them as interchangeable:
 
-Strength bands: Exceptional 90–100; Very Strong 80–89; Good 70–79; Moderate 60–69; Weak below 60. Explain that score and qualification status are separate.
+- **City RMA (0–10):** rental demand/transaction activity 25%; leasing velocity 20%; rental supply/competition 20%; rent growth/stability 15%; renter-pool/employment diversity 10%; rental affordability/resilience 10%.
+- **City IF (0–10):** purchase-price affordability 20%; rental yield/cap-rate potential 20%; financing/DSCR feasibility 20%; reserve-adjusted cash flow 15%; total initial cash 10%; carrying costs/tax exposure 10%; suitable inventory 5%.
+- **Combined city search priority (0–10):** 40% RMA + 60% IF; always show both underlying scores.
+- **ZIP discovery score (0–100):** retain the existing weights: rental demand 15; employment diversity/access 15; tenant income/resilience 10; rental yield/break-even 20; crime/safety 10; school quality/stability 10; tax/insurance/HOA 10; population/infrastructure 5; resale liquidity/economic diversity 5.
+
+City rating bands: 9.0–10 Exceptional; 8.0–8.9 Very Strong; 7.0–7.9 Good; 6.0–6.9 Moderate; below 6.0 Weak. ZIP strength bands remain 90–100 Exceptional; 80–89 Very Strong; 70–79 Good; 60–69 Moderate; below 60 Weak. Explain that scores and qualification status are separate.
 
 **Step 5 — Report preferences**
-Default to one Excel workbook with four tabs:
+For a short city list, default to a concise comparison in chat; create a workbook when the list is large or the user requests one. For nationwide discovery, default to one Excel workbook with four tabs:
 1. Executive Summary
 2. Metro & ZIP Details
 3. ZIP Parameter Scorecard — wide format, one row per ZIP
 4. Methodology & Assumptions
 
-Confirm the wide format. Ask only if the user requests a different deliverable.
+For a city-mode workbook, Tab 3 becomes a City Scorecard with one row per city and separate RMA/IF component columns. Ask only if the user requests a different deliverable.
 
 **Step 6 — Review and confirm**
 Provide a compact setup summary. Ask the user to confirm before launching the first full research run. After confirmation, create or update a concise configuration/profile note alongside the deliverable if the working environment supports it. Do not claim that setup is saved persistently unless the file or supported memory mechanism is actually created.
@@ -88,6 +94,30 @@ Provide a compact setup summary. Ask the user to confirm before launching the fi
 ### If setup is incomplete during a scheduled run
 
 A scheduled run must not repeatedly ask the user setup questions. If the profile has not been confirmed, produce a short setup-needed notice and request completion of the wizard; do not invent missing preferences or proceed with assumptions that materially affect ranking. Once confirmed, scheduled runs should execute without reopening the wizard unless a material input is missing or the user asks to change it.
+
+## City Score Mode — required scoring method
+
+For every requested city, calculate and report both scores independently using the complete formulas in the master prompt:
+
+- **Rental Market Attractiveness (RMA), 0–10:** rental demand/transaction activity 25%; leasing velocity 20%; rental supply/competition 20%; rent growth/stability 15%; renter-pool/employment diversity 10%; rental affordability/resilience 10%.
+- **Investment Feasibility (IF), 0–10:** purchase-price affordability 20%; rental yield/cap-rate potential 20%; financing/DSCR feasibility 20%; reserve-adjusted cash flow 15%; total initial cash requirement 10%; carrying costs/tax exposure 10%; suitable inventory availability 5%.
+- **Combined Search Priority (0–10):** `0.40 × RMA + 0.60 × IF`. This is a prioritization aid only; always display RMA and IF beside it. Never let the combined score conceal a weak component or override a hard gate.
+
+Score each component from 0–10 using the explicit metric anchors in the master prompt. For peer-relative metrics, benchmark against a consistent cohort of at least 10 comparable US cities/metros where possible, matched for market size, target property type, housing-cost context and data availability. Score all requested cities against the same benchmark cohort and use the requested list for the final ranking. For a single city, use the same national/comparable-market benchmark cohort plus its multi-year trend. If fewer than 10 credible peers are available, disclose the cohort size and lower confidence; never manufacture a peer percentile. Show each component score, weight, weighted contribution, key underlying metrics, evidence date, source, and confidence.
+
+Use representative city-level property samples, not hand-picked best deals. Target at least 10 relevant active/closed sale and rental comparables per city; 5–9 supports a provisional score; fewer than 5 means mark the affected IF components and overall IF as low-confidence/provisional. Stratify by property type and bedroom count where possible. Do not use a city median across all property types if the investor profile targets single-family/townhomes, etc. Do not imply that city-level underwriting confirms any specific property.
+
+**City score ratings (0–10):** 9.0–10.0 Exceptional; 8.0–8.9 Very Strong; 7.0–7.9 Good; 6.0–6.9 Moderate; below 6.0 Weak. Also label combined search priority using the same bands. Round displayed scores to one decimal, but retain full precision for calculations.
+
+**City-level qualification is not a property pass.** Show a separate city research status: `Strong Search Market`, `Selective`, `Low Priority`, or `Insufficient Evidence`. Property-specific school assignment, legal rental status, HOA, condition, hazard, and exact financial gates remain unverified until an address is selected. Do not mark an entire city as passing the address-specific school gate. If the user asks for a city score only, do not search individual property listings or produce property recommendations.
+
+**City Score Mode output:**
+1. Scope and as-of date; exact cities evaluated; profile/financing assumptions.
+2. Ranked comparison table: city/state, RMA, RMA rating, IF, IF rating, combined priority, status, confidence.
+3. Two score breakdowns per city with component scores/weights and decisive metrics.
+4. Strengths, constraints, data gaps and why each city ranks where it does.
+5. Sources and dates; distinguish closed/achieved rents from asking rents and observed facts from estimates.
+6. Clear statement that rankings are relative to the requested list and current evidence, not a guarantee or property-level recommendation.
 
 ## Research workflow after setup
 
@@ -167,7 +197,8 @@ Provide the Excel workbook and a short decision summary:
 
 ## Non-negotiable quality rules
 
-- Nationwide discovery, not DFW-only.
+- Nationwide discovery when requested; when a city/list is supplied, score exactly that scope.
+- City RMA and IF are separate, transparent 0–10 scores; combined priority is supplementary.
 - Every ZIP has its own score and gate status.
 - All three school levels are checked separately; no averaging.
 - No high score can override a mandatory-gate failure.

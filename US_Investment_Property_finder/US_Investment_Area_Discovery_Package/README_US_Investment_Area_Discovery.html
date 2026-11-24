@@ -21,11 +21,20 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding-top:14px;color:v
 <main>
   <span class="pill">2–3 minute guide</span>
   <h1>US Investment Area Discovery</h1>
-  <p class="sub">Quick guide to first-run setup, workbook inputs, and interpreting ZIP-code rankings.</p>
+  <p class="sub">Quick guide to city scoring, first-run setup, workbook inputs, and interpreting market rankings.</p>
 
   <h2>What this tool does</h2>
-  <p>It discovers promising US markets, groups nearby ZIP codes into geographic clusters, and scores each ZIP for rental prospects, schools, safety, employment, affordability, and long-term resilience.</p>
+  <p>It can score one city or a user-provided city list, discover promising US markets, and score ZIP codes. City reports calculate Rental Market Attractiveness (RMA) and Investment Feasibility (IF) separately.</p>
   <div class="note"><b>Scope:</b> It answers “where should I look?” It does not find or underwrite individual houses. Property discovery remains a separate workflow.</div>
+
+  <h2>Score one city or a city list</h2>
+  <p>Ask <b>“Score Plano, TX”</b> or <b>“Compare Plano, Frisco, McKinney and Princeton, TX.”</b> The skill scores exactly the requested cities and asks for a state only if a city name is ambiguous. A city-only request does not start nationwide discovery.</p>
+  <table><thead><tr><th>Score</th><th>Components and weights</th></tr></thead><tbody>
+  <tr><td><b>Rental Market Attractiveness (RMA)</b><br>0–10</td><td>Rental demand 25%; leasing velocity 20%; rental supply 20%; rent growth/stability 15%; renter-pool/employment diversity 10%; affordability/resilience 10%.</td></tr>
+  <tr><td><b>Investment Feasibility (IF)</b><br>0–10</td><td>Purchase affordability 20%; cap-rate potential 20%; DSCR 20%; reserve-adjusted cash flow 15%; initial cash 10%; carrying costs/taxes 10%; suitable inventory 5%.</td></tr>
+  <tr><td><b>Combined search priority</b><br>0–10</td><td>40% RMA + 60% IF. Always show both underlying scores; this combined score cannot override property-level hard gates.</td></tr>
+  </tbody></table>
+  <p><b>Rating bands:</b> 9.0–10 Exceptional; 8.0–8.9 Very Strong; 7.0–7.9 Good; 6.0–6.9 Moderate; below 6.0 Weak. Scores are market-level comparisons, not approval of a specific property. Small or weak samples are marked provisional/low confidence.</p>
 
   <h2>First run: guided setup</h2>
   <p>The skill starts with a short conversational wizard. Existing preferences are pre-filled; you confirm or change them rather than entering everything again.</p>
@@ -33,7 +42,7 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding-top:14px;color:v
     <thead><tr><th>Input</th><th>Starting setting</th></tr></thead>
     <tbody>
       <tr><td>Purchase-price target</td><td>About $350,000 or less</td></tr>
-      <tr><td>Down payment</td><td>Less than $100,000; closing costs and reserves are separate</td></tr>
+      <tr><td>Financing</td><td>Model 20% and 25% down; total initial cash ceiling is configured separately</td></tr>
       <tr><td>Target rent</td><td>About $2,500/month where supported by local evidence</td></tr>
       <tr><td>Property type / size</td><td>Single-family, townhome, rental-permitted condo, duplex or small multifamily; 2–4 bedrooms</td></tr>
       <tr><td>Holding period</td><td>10–15 years</td></tr>
@@ -45,6 +54,7 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding-top:14px;color:v
   <p>The wizard confirms mandatory gates, scoring weights, and report layout before the first full research run.</p>
 
   <h2>Excel workbook: four tabs</h2>
+  <p>For city-list mode, the Executive Summary ranks requested cities by RMA and IF; City Details shows component scores and evidence. Nationwide mode retains the metro/ZIP workflow.</p>
   <div class="tabs">
     <div class="tab"><b>1. Executive Summary</b><span class="muted">Top metros/clusters and ZIPs, scores, strength, qualification, confidence, and ranking rationale.</span></div>
     <div class="tab"><b>2. Metro &amp; ZIP Details</b><span class="muted">Geographic clusters with nearby ZIPs grouped together. Each ZIP keeps its own score.</span></div>
@@ -53,7 +63,7 @@ footer{border-top:1px solid var(--line);margin-top:25px;padding-top:14px;color:v
   </div>
 
   <h2>How to interpret the results</h2>
-  <p><b>Score (0–100)</b> is the weighted ZIP-code score. Higher is stronger.</p>
+  <p><b>City scores (0–10)</b> report RMA and IF separately; combined priority is 40% RMA + 60% IF. <b>ZIP score (0–100)</b> is a separate weighted score. Do not compare the two scales directly.</p>
   <table>
     <thead><tr><th>Score</th><th>Strength</th></tr></thead>
     <tbody>

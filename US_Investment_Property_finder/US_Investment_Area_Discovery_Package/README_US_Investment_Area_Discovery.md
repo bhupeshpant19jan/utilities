@@ -4,9 +4,19 @@
 
 ## What this tool does
 
-It finds promising US markets and groups nearby ZIP codes into geographic clusters. It scores each ZIP for rental prospects, schools, safety, employment, affordability, and long-term resilience.
+It can score a city or a user-provided list of cities, discover promising US markets, and group nearby ZIP codes into geographic clusters. City reports calculate two separate scores: Rental Market Attractiveness (RMA) and Investment Feasibility (IF). ZIP discovery retains its own 0–100 score.
 
 **It answers “where should I look?” — not “which house should I buy?”** Individual property searches and financial underwriting remain a separate workflow.
+
+## Score one city or a city list
+
+You can simply ask: **“Score Plano, TX”** or **“Compare Plano, Frisco, McKinney and Princeton, TX.”** The skill scores exactly the cities supplied and returns RMA, IF, a combined search-priority score, ratings, confidence and evidence. If a city name is ambiguous, it asks for the state. A city-only request does not trigger nationwide discovery.
+
+- **RMA (0–10):** demand/transactions 25%; leasing velocity 20%; rental supply 20%; rent growth/stability 15%; renter-pool/employment diversity 10%; affordability/resilience 10%.
+- **IF (0–10):** purchase affordability 20%; cap-rate potential 20%; DSCR 20%; reserve-adjusted cash flow 15%; initial cash 10%; carrying costs/taxes 10%; suitable inventory 5%.
+- **Combined priority:** 40% RMA + 60% IF. Both underlying scores always remain visible; the combined score cannot override a property-level hard gate.
+
+**Rating bands:** 9.0–10 Exceptional; 8.0–8.9 Very Strong; 7.0–7.9 Good; 6.0–6.9 Moderate; below 6.0 Weak. City scores are market-level comparisons, not guarantees or approval of a specific property. Small or weak data samples are marked provisional/low confidence.
 
 ## First run: guided setup
 
@@ -15,7 +25,7 @@ The first time you run the skill, it walks you through a short conversational se
 | Input | Starting setting |
 |---|---|
 | Purchase-price target | About $350,000 or less |
-| Down payment | Less than $100,000 (closing costs and reserves are separate) |
+| Financing | Model 20% and 25% down; total initial cash ceiling is configured separately |
 | Target rent | About $2,500/month, where local evidence supports it |
 | Property type / size | SFR, townhome, rental-permitted condo, duplex or small multifamily; 2–4 bedrooms |
 | Holding period | 10–15 years |
@@ -27,6 +37,8 @@ The wizard confirms the mandatory gates, scoring weights, and report layout befo
 
 ## The Excel workbook: four tabs
 
+For city-list mode, the Executive Summary ranks requested cities using RMA and IF; City Details shows each component and evidence. Nationwide mode retains the metro/ZIP discovery and wide ZIP scorecard.
+
 1. **Executive Summary** — the quick decision view: strongest metros/clusters, ZIP codes, scores, strength, qualification, confidence, and why they rank.
 2. **Metro & ZIP Details** — nearby ZIP codes grouped by metro and geographic cluster. Each ZIP still has its own score.
 3. **ZIP Parameter Scorecard** — one row per ZIP. Separate columns show each parameter's score, evidence/metric, and confidence, plus mandatory-gate results and key risks.
@@ -34,7 +46,7 @@ The wizard confirms the mandatory gates, scoring weights, and report layout befo
 
 ## How to interpret the results
 
-**Score (0–100)** is the weighted ZIP-code score. Higher is stronger.
+**City scores (0–10)** report RMA and IF separately; combined search priority is 40% RMA + 60% IF. **ZIP score (0–100)** remains a separate weighted ZIP-code score. Do not compare the city and ZIP scales directly.
 
 | Score | Strength |
 |---:|---|
